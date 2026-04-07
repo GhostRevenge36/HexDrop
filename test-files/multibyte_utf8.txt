@@ -1,0 +1,15 @@
+HexDrop Test File — UTF-8 Multibyte Demo
+=========================================
+
+ASCII range:  Hello, World! (0x00-0x7F)
+Emoji:        🔥 Fire  🎮 Gamepad  💾 Disk  🔍 Search
+Symbols:      ★ ☆ ♠ ♣ ♥ ♦ ⚡ ✓ ✗
+Japanese:     日本語テスト — にほんご
+Greek:        αβγδεζηθ  ΑΒΓΔΕΖΗΘ
+Math:         ∑ ∆ π ∞ ≤ ≥ ≠ ±
+Latin-ext:    Ångström  café  naïve  résumé  über
+
+Multibyte sequence lengths:
+  2-byte: Ã© (é = U+00E9)
+  3-byte: â (★ = U+2605)
+  4-byte: ð¥ (🔥 = U+1F525)

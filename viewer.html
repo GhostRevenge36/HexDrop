@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HexDrop — Full Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body { width: 100vw; height: 100vh; min-height: 100vh; overflow: hidden; }
+    #app { height: 100vh; }
+    #viewer { max-height: calc(100vh - 120px); }
+    #dropzone { margin: 40px; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="logo">
+        <span class="logo-hex">0x</span><span class="logo-name">HexDrop</span>
+      </div>
+      <div class="toolbar" id="toolbar" style="display:none">
+        <div class="file-info">
+          <span id="filename">—</span>
+          <span id="filesize" class="dim">—</span>
+        </div>
+        <div class="toolbar-right">
+          <label class="ctrl-label">Encoding</label>
+          <select id="encoding">
+            <option value="utf8">UTF-8</option>
+            <option value="utf16le">UTF-16 LE</option>
+            <option value="utf16be">UTF-16 BE</option>
+            <option value="cp1252">Windows-1252</option>
+            <option value="ascii">ASCII</option>
+          </select>
+          <label class="ctrl-label">Cols</label>
+          <select id="cols">
+            <option value="8">8</option>
+            <option value="16" selected>16</option>
+            <option value="32">32</option>
+          </select>
+          <div class="export-wrap" id="exportWrap">
+            <button id="exportBtn" title="Export file">Export ▾</button>
+            <div class="export-menu" id="exportMenu">
+              <button id="exportDump">
+                <span class="em-title">Hex Dump</span>
+                <span class="em-desc">Address · hex bytes · ASCII — standard format</span>
+              </button>
+              <button id="exportHex">
+                <span class="em-title">Hex Only</span>
+                <span class="em-desc">Raw bytes as hex text — paste into scripts</span>
+              </button>
+              <button id="exportText">
+                <span class="em-title">Decoded Text</span>
+                <span class="em-desc">Readable strings in current encoding</span>
+              </button>
+              <button id="exportPdf">
+                <span class="em-title">Save as PDF</span>
+                <span class="em-desc">Print-ready hex dump — archive or share</span>
+              </button>
+            </div>
+          </div>
+          <button id="helpBtn" class="help-btn" title="Show keyboard shortcuts and instructions">?</button>
+          <label class="ctrl-label">Jump to Address</label>
+          <button id="jumpMode" title="Toggle hex / decimal address input" class="mode-btn">HEX</button>
+          <input id="jumpInput" type="text" placeholder="e.g. 1C" title="Type a byte address and press Enter or ↵. Toggle HEX/DEC to switch base.">
+          <button id="jumpBtn" title="Jump to address (Enter)">↵</button>
+        </div>
+      </div>
+    </header>
+
+    <div id="dropzone">
+      <div class="drop-content">
+        <div class="drop-icon">⬛</div>
+        <div class="drop-title">Drop any file here</div>
+        <div class="drop-sub">or <label for="fileInput" class="link">click to browse</label></div>
+        <input type="file" id="fileInput" style="display:none">
+      </div>
+    </div>
+
+    <div id="searchbar" style="display:none">
+      <span class="search-label">FIND VALUE</span>
+      <button id="searchMode" title="Currently: Hex input (e.g. 4D 5A). Click to switch to Decimal values." class="mode-btn">HEX</button>
+      <input id="searchInput" type="text" placeholder="Hex bytes (e.g. 4D 5A) or ASCII text…" spellcheck="false" title="Ctrl+F to focus. HEX: type hex bytes separated by spaces, or plain ASCII. DEC: type decimal byte values 0–255 separated by spaces.">
+      <span id="searchInfo" class="dim"></span>
+      <button id="prevMatch" title="Previous match (Shift+Enter)">▲ PREV</button>
+      <button id="nextMatch" title="Next match (Enter)">▼ NEXT</button>
+      <button id="clearSearch" title="Clear search (Escape)">✕ CLEAR</button>
+    </div>
+
+    <div id="viewer" style="display:none">
+      <div id="hexTable"></div>
+    </div>
+
+    <div id="statusbar" style="display:none">
+      <span class="status-label">STATUS</span>
+      <span id="offsetInfo">Offset: —</span>
+      <span id="byteInfo" class="dim"></span>
+      <span id="selectionInfo" class="dim"></span>
+      <button id="copyHexBtn" style="display:none" title="Copy selection as hex bytes">Copy Hex</button>
+      <button id="copyTextBtn" style="display:none" title="Copy selection as decoded text">Copy Text</button>
+      <span class="spacer"></span>
+      <span class="status-label">PAGE</span>
+      <span id="pageInfo"></span>
+      <button id="prevPage" disabled title="Previous page (Page Up)">◀ PREV</button>
+      <button id="nextPage" title="Next page (Page Down)">NEXT ▶</button>
+    </div>
+  </div>
+
+  <!-- ── Help overlay (first-open only; re-openable via ? button) ── -->
+  <div id="helpOverlay">
+    <div id="helpPanel">
+      <div class="help-header">
+        <span class="help-title">HexDrop — Quick Reference</span>
+        <button id="helpClose" title="Close">✕</button>
+      </div>
+      <div class="help-body">
+
+        <div class="help-section">
+          <div class="help-section-title">LOADING A FILE</div>
+          <div class="help-row"><span class="help-key">Drop</span><span>Drag any file onto the drop zone to open it</span></div>
+          <div class="help-row"><span class="help-key">Browse</span><span>Click the drop zone to pick a file from your computer</span></div>
+          <div class="help-row"><span class="help-key">Load new file</span><span>Once a file is open, drag a new file anywhere onto this window — it replaces the current file immediately. You do NOT need to close or reopen HexDrop.</span></div>
+          <div class="help-row"><span class="help-key">Popup drop</span><span>Drop a file directly on the HexDrop popup (toolbar icon) — it opens the viewer automatically in this tab</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">FIND VALUE BAR — searches by what a byte CONTAINS (Ctrl+F)</div>
+          <div class="help-row"><span class="help-key">HEX mode</span><span>Type hex bytes separated by spaces — e.g. <code>4D 5A</code> finds all MZ headers. Or type plain ASCII text.</span></div>
+          <div class="help-row"><span class="help-key">DEC mode</span><span>Type decimal byte values 0–255 — e.g. <code>128</code> finds every byte with value 128 (same as hex 80). Multiple: <code>77 90</code></span></div>
+          <div class="help-row"><span class="help-key">▼ NEXT / ▲ PREV</span><span>Step through every match in the file (also Enter / Shift+Enter)</span></div>
+          <div class="help-row"><span class="help-key">✕ CLEAR</span><span>Clear search and remove all highlights (also Escape)</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">TOOLBAR — Jump to Address · Encoding · Export</div>
+          <div class="help-row"><span class="help-key">Jump to Address</span><span>Type a byte ADDRESS (position in file) and press ↵ — scrolls directly to that byte and selects it</span></div>
+          <div class="help-row"><span class="help-key">HEX / DEC toggle</span><span>Next to Jump — switches between hex address (e.g. 3C) and decimal address (e.g. 60)</span></div>
+          <div class="help-row"><span class="help-key">Encoding</span><span>Changes how the ASCII column decodes bytes — UTF-8, UTF-16 LE/BE, Windows-1252, ASCII</span></div>
+          <div class="help-row"><span class="help-key">Cols</span><span>Sets how many bytes appear per row — 8, 16, or 32</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">EXPORT ▾ — three formats to download or share</div>
+          <div class="help-row"><span class="help-key">Hex Dump</span><span>Downloads the full file as a formatted grid: address · hex bytes · ASCII. The standard format — paste into forum posts, bug reports, or share with other reverse engineers.</span></div>
+          <div class="help-row"><span class="help-key">Hex Only</span><span>Downloads raw bytes as hex text, 16 bytes per line (e.g. <code>4D 5A 90 00</code>). Paste directly into Python scripts, Cheat Engine, or patch tools.</span></div>
+          <div class="help-row"><span class="help-key">Decoded Text</span><span>Downloads the file decoded as readable text using the current encoding. Perfect for sharing game strings from a UTF-16 LE save — the recipient only needs Notepad to read it.</span></div>
+          <div class="help-row"><span class="help-key">Save as PDF</span><span>Opens a print-ready hex dump in a new tab and triggers Chrome's print dialog — choose <em>Save as PDF</em> as the destination. Great for archiving or sharing a formatted document.</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">HEX VIEWER (main area)</div>
+          <div class="help-row"><span class="help-key">Click a byte</span><span>Selects it — STATUS bar shows its Hex value, character, and decimal number</span></div>
+          <div class="help-row"><span class="help-key">Click + drag</span><span>Selects a byte range — Copy Hex or Copy Text buttons appear in the STATUS bar</span></div>
+          <div class="help-row"><span class="help-key">Page Up / Down</span><span>Navigate through large files one page at a time (16 KB per page)</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">STATUS BAR (bottom bar)</div>
+          <div class="help-row"><span class="help-key">Offset: 0x3C (60)</span><span>The byte's ADDRESS — where it lives in the file. The (60) is the decimal address to type into Jump to Address in DEC mode.</span></div>
+          <div class="help-row"><span class="help-key">Hex / Char / Dec</span><span>The byte's VALUE — what is stored there in three formats. Note: this Dec is the VALUE (e.g. 128), not the address.</span></div>
+          <div class="help-row"><span class="help-key">Copy Hex</span><span>Copies selected bytes as a hex string (e.g. <code>4D 5A 90 00</code>)</span></div>
+          <div class="help-row"><span class="help-key">Copy Text</span><span>Copies selected bytes decoded as text in the current encoding</span></div>
+          <div class="help-row"><span class="help-key">PAGE</span><span>Current page and total — use ◀ PREV / NEXT ▶ to navigate large files</span></div>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-title">KEYBOARD SHORTCUTS</div>
+          <div class="help-row"><span class="help-key">Ctrl+F</span><span>Focus the Find Value search bar</span></div>
+          <div class="help-row"><span class="help-key">Enter</span><span>Next search match (when search bar is focused)</span></div>
+          <div class="help-row"><span class="help-key">Shift+Enter</span><span>Previous search match</span></div>
+          <div class="help-row"><span class="help-key">Escape</span><span>Clear search and remove all highlights</span></div>
+          <div class="help-row"><span class="help-key">Page Down</span><span>Next page (16 KB forward)</span></div>
+          <div class="help-row"><span class="help-key">Page Up</span><span>Previous page (16 KB back)</span></div>
+          <div class="help-row"><span class="help-key">?</span><span>Reopen this help panel at any time</span></div>
+        </div>
+
+      </div>
+      <div class="help-footer">
+        <label class="help-nosee"><input type="checkbox" id="helpNoShow"> Don't show this again on startup</label>
+        <button id="helpGotIt">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="hexdrop.js"></script>
+</body>
+</html>

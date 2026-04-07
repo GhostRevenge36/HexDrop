@@ -1,0 +1,16 @@
+Latin-1 / ISO-8859-1 Extended Character Demo
+=============================================
+
+Common accented letters:
+  àáâãäå (a variants)  ÀÁÂÃÄÅ (A variants)
+  èéêë (e variants)  ÈÉÊË (E variants)
+  ùúûü (u variants)  ÙÚÛÜ (U variants)
+  ñ (n-tilde)  Ñ (N-tilde)  ç (c-cedilla)  ß (sharp-s)
+
+Punctuation and symbols:
+  © Copyright  ® Registered  ° Degree  µ Micro  ¶ Pilcrow
+  £ Pound  ¥ Yen  € Euro  ¼½¾ Fractions
+
+Example words:
+  café  naïve  résumé  über  España  français
+  München  Øre  Århus  Reykjavík  Ísland

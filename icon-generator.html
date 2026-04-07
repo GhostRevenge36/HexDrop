@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HexDrop Icon Generator</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1a1710;
+    color: #d4b483;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    gap: 32px;
+    min-height: 100vh;
+  }
+  h1 {
+    font-size: 22px;
+    color: #f0a830;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 16px rgba(240,168,48,0.5);
+  }
+  p { font-size: 12px; color: #6b5830; letter-spacing: 0.04em; }
+  .grid {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-end;
+  }
+  .icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .label {
+    font-size: 11px;
+    color: #6b5830;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  canvas {
+    border: 1px solid #2a2416;
+    border-radius: 4px;
+    image-rendering: pixelated;
+  }
+  button {
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.06em;
+    padding: 6px 16px;
+    background: #1a1710;
+    color: #f0a830;
+    border: 1px solid #7a5818;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: all 0.12s;
+    text-transform: uppercase;
+  }
+  button:hover {
+    background: rgba(240,168,48,0.12);
+    border-color: #f0a830;
+  }
+  .dl-all {
+    font-size: 13px;
+    padding: 10px 32px;
+    background: #f0a830;
+    color: #0e0d0a;
+    border: none;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  .dl-all:hover { background: #c8891c; color: #0e0d0a; }
+  .note {
+    font-size: 11px;
+    color: #3a3018;
+    text-align: center;
+    line-height: 1.8;
+    max-width: 480px;
+  }
+  .note strong { color: #6b5830; }
+</style>
+</head>
+<body>
+
+<h1>HexDrop — Icon Generator</h1>
+<p>Amber Phosphor theme · All 4 sizes · Chrome Web Store ready</p>
+
+<div class="grid" id="grid"></div>
+
+<button class="dl-all" onclick="downloadAll()">⬇ Download All 4 Icons</button>
+
+<p class="note">
+  After downloading, move each file into<br>
+  <strong>C:\Users\charl\hexviewer-extension\icons\</strong><br>
+  replacing the existing icons. Then reload the extension in Chrome.
+</p>
+
+<script>
+const SIZES = [16, 32, 48, 128];
+
+// Draw the HexDrop icon on a canvas at the given size
+function drawIcon(canvas, size) {
+  const ctx = canvas.getContext('2d');
+  const s = size;
+  const r = size <= 16 ? 2 : size <= 32 ? 4 : size <= 48 ? 6 : 14; // corner radius
+
+  // Background
+  ctx.clearRect(0, 0, s, s);
+  roundRect(ctx, 0, 0, s, s, r);
+  const bg = ctx.createLinearGradient(0, 0, 0, s);
+  bg.addColorStop(0, '#141108');
+  bg.addColorStop(1, '#0a0908');
+  ctx.fillStyle = bg;
+  ctx.fill();
+
+  // Border
+  roundRect(ctx, 0.5, 0.5, s - 1, s - 1, r);
+  ctx.strokeStyle = '#2a2416';
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  if (size >= 32) {
+    // Subtle amber top accent line
+    roundRect(ctx, 1, 1, s - 2, s / 6, r - 1);
+    const topGlow = ctx.createLinearGradient(0, 0, s, 0);
+    topGlow.addColorStop(0,   'rgba(240,168,48,0)');
+    topGlow.addColorStop(0.3, 'rgba(240,168,48,0.08)');
+    topGlow.addColorStop(0.7, 'rgba(240,168,48,0.08)');
+    topGlow.addColorStop(1,   'rgba(240,168,48,0)');
+    ctx.fillStyle = topGlow;
+    ctx.fill();
+
+    // Top amber line
+    ctx.beginPath();
+    ctx.moveTo(r + 2, 1);
+    ctx.lineTo(s - r - 2, 1);
+    const lineGrad = ctx.createLinearGradient(0, 0, s, 0);
+    lineGrad.addColorStop(0,   'rgba(240,168,48,0)');
+    lineGrad.addColorStop(0.2, 'rgba(240,168,48,0.7)');
+    lineGrad.addColorStop(0.8, 'rgba(240,168,48,0.7)');
+    lineGrad.addColorStop(1,   'rgba(240,168,48,0)');
+    ctx.strokeStyle = lineGrad;
+    ctx.lineWidth = size >= 128 ? 1.5 : 1;
+    ctx.stroke();
+  }
+
+  if (size >= 48) {
+    // Scanline texture overlay (subtle)
+    for (let y = 0; y < s; y += 4) {
+      ctx.fillStyle = 'rgba(0,0,0,0.06)';
+      ctx.fillRect(0, y + 3, s, 1);
+    }
+  }
+
+  // Glow behind text
+  if (size >= 32) {
+    const cx = s / 2, cy = s / 2 + (size >= 128 ? 4 : size >= 48 ? 2 : 1);
+    const glowR = s * 0.38;
+    const glow = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+    glow.addColorStop(0,   'rgba(240,168,48,0.18)');
+    glow.addColorStop(0.5, 'rgba(240,168,48,0.07)');
+    glow.addColorStop(1,   'rgba(240,168,48,0)');
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(cx, cy, glowR, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // "0x" text
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  if (size === 16) {
+    ctx.font = `bold 9px 'Courier New', monospace`;
+    ctx.fillStyle = '#f0a830';
+    ctx.fillText('0x', 8, 9);
+  } else if (size === 32) {
+    // "0x" with glow
+    ctx.font = `bold 18px 'Courier New', monospace`;
+    ctx.shadowColor = 'rgba(240,168,48,0.8)';
+    ctx.shadowBlur = 6;
+    ctx.fillStyle = '#f0a830';
+    ctx.fillText('0x', 16, 17);
+    ctx.shadowBlur = 0;
+  } else if (size === 48) {
+    ctx.font = `bold 26px 'Courier New', monospace`;
+    ctx.shadowColor = 'rgba(240,168,48,0.7)';
+    ctx.shadowBlur = 8;
+    ctx.fillStyle = '#f0a830';
+    ctx.fillText('0x', 24, 26);
+    ctx.shadowBlur = 0;
+    // Underline dot — hex vibe
+    ctx.fillStyle = 'rgba(240,168,48,0.4)';
+    ctx.fillRect(10, 39, 28, 1.5);
+  } else {
+    // 128px — full treatment
+    // "0x" large
+    ctx.font = `bold 56px 'Courier New', monospace`;
+    ctx.shadowColor = 'rgba(240,168,48,0.9)';
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = '#f0a830';
+    ctx.fillText('0x', 64, 58);
+    ctx.shadowBlur = 0;
+
+    // "HexDrop" subtitle
+    ctx.font = `bold 13px 'Courier New', monospace`;
+    ctx.fillStyle = '#7a5818';
+    ctx.letterSpacing = '0.1em';
+    ctx.fillText('HEXDROP', 64, 90);
+
+    // Bottom amber rule
+    const ruleGrad = ctx.createLinearGradient(16, 0, 112, 0);
+    ruleGrad.addColorStop(0,   'rgba(240,168,48,0)');
+    ruleGrad.addColorStop(0.2, 'rgba(240,168,48,0.5)');
+    ruleGrad.addColorStop(0.8, 'rgba(240,168,48,0.5)');
+    ruleGrad.addColorStop(1,   'rgba(240,168,48,0)');
+    ctx.fillStyle = ruleGrad;
+    ctx.fillRect(16, 104, 96, 1);
+
+    // Four hex dots — decorative
+    const dotY = 114;
+    const dots = [38, 50, 78, 90];
+    dots.forEach(dx => {
+      ctx.fillStyle = 'rgba(240,168,48,0.3)';
+      ctx.fillRect(dx, dotY, 3, 3);
+    });
+  }
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Build the grid
+const grid = document.getElementById('grid');
+SIZES.forEach(size => {
+  const card = document.createElement('div');
+  card.className = 'icon-card';
+
+  const label = document.createElement('div');
+  label.className = 'label';
+  label.textContent = `${size} × ${size}`;
+
+  const canvas = document.createElement('canvas');
+  canvas.width  = size;
+  canvas.height = size;
+  canvas.style.width  = Math.max(size, 64) + 'px';
+  canvas.style.height = Math.max(size, 64) + 'px';
+  drawIcon(canvas, size);
+
+  const btn = document.createElement('button');
+  btn.textContent = `Download icon${size}.png`;
+  btn.onclick = () => downloadIcon(canvas, size);
+
+  card.appendChild(label);
+  card.appendChild(canvas);
+  card.appendChild(btn);
+  grid.appendChild(card);
+});
+
+function downloadIcon(canvas, size) {
+  const a = document.createElement('a');
+  a.download = `icon${size}.png`;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+function downloadAll() {
+  const canvases = document.querySelectorAll('canvas');
+  canvases.forEach((canvas, i) => {
+    setTimeout(() => downloadIcon(canvas, SIZES[i]), i * 300);
+  });
+}
+</script>
+</body>
+</html>

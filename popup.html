@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HexDrop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:          #0e0d0a;
+      --bg2:         #131108;
+      --bg3:         #1a1710;
+      --bg4:         #221f14;
+      --accent:      #f0a830;
+      --accent2:     #c8891c;
+      --accent-dim:  #7a5818;
+      --accent-glow: rgba(240,168,48,0.12);
+      --text:        #d4b483;
+      --dim:         #6b5830;
+      --ghost:       #3a3018;
+      --border:      #2a2416;
+      --border-hi:   #3e3520;
+      --display:     'VT323', monospace;
+      --ui:          'IBM Plex Mono', 'Consolas', monospace;
+      --scanline:    repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--ui);
+      font-size: 11px;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px 8px;
+      background: var(--bg2);
+      border-bottom: 2px solid var(--accent-dim);
+      background-image: var(--scanline);
+      position: relative;
+    }
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+      opacity: 0.5;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 0;
+      user-select: none;
+    }
+    .logo-hex {
+      font-family: var(--display);
+      font-size: 24px;
+      color: var(--accent);
+      line-height: 1;
+      text-shadow: 0 0 8px rgba(240,168,48,0.6), 0 0 16px rgba(240,168,48,0.25);
+    }
+    .logo-name {
+      font-family: var(--display);
+      font-size: 24px;
+      color: var(--text);
+      line-height: 1;
+    }
+    .tagline {
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    /* ── Main area ── */
+    .main { padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 10px; }
+
+    /* ── Open in tab button ── */
+    .open-btn {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--bg3);
+      border: 1px solid var(--accent-dim);
+      border-radius: 4px;
+      color: var(--accent);
+      font-family: var(--ui);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.12s, box-shadow 0.12s;
+    }
+    .open-btn:hover {
+      background: var(--accent-glow);
+      box-shadow: 0 0 16px rgba(240,168,48,0.1);
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ghost);
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Drop zone ── */
+    .drop-inline {
+      border: 1px dashed var(--accent-dim);
+      border-radius: 4px;
+      padding: 16px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      background: var(--bg2);
+    }
+    .drop-inline:hover,
+    .drop-inline.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .drop-inline .icon {
+      font-size: 20px;
+      margin-bottom: 6px;
+      opacity: 0.45;
+      filter: sepia(1) hue-rotate(-10deg);
+    }
+    .drop-inline .title {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .drop-inline .sub {
+      font-size: 10px;
+      color: var(--dim);
+      margin-top: 3px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Instructions hint ── */
+    .hint {
+      font-size: 9px;
+      color: var(--ghost);
+      text-align: center;
+      letter-spacing: 0.03em;
+      line-height: 1.6;
+    }
+    .hint strong { color: var(--dim); }
+
+    /* ── Footer ── */
+    footer {
+      padding: 7px 14px;
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      font-size: 9px;
+      color: var(--ghost);
+      display: flex;
+      justify-content: space-between;
+      letter-spacing: 0.03em;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <span class="logo-hex">0x</span><span class="logo-name">HexDrop</span>
+    </div>
+    <span class="tagline">Binary Viewer</span>
+  </header>
+
+  <div class="main">
+
+    <button class="open-btn" id="openTabBtn">⬡ &nbsp;Open Full Viewer</button>
+
+    <div class="divider">or drop a file</div>
+
+    <div class="drop-inline" id="miniDrop">
+      <div class="icon">📂</div>
+      <div class="title">Drop file · click to browse</div>
+      <div class="sub">Opens viewer in a new tab</div>
+      <input type="file" id="fileInput" style="display:none">
+    </div>
+
+    <div class="hint">
+      Once open — <strong>drop any new file directly onto the viewer</strong><br>
+      to replace it without closing the tab.
+    </div>
+
+  </div>
+
+  <footer>
+    <span>v1.0.0</span>
+    <span>No data leaves your device</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>
