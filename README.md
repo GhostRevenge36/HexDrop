@@ -36,9 +36,11 @@ Honestly, anyone who needs to look inside a file without spinning up a full hex 
 
 ## Install
 
-**Chrome Web Store:** Pending review — link will be added once approved.
+**Chrome Web Store (live):** https://chromewebstore.google.com/detail/hexdrop-%E2%80%94-hex-viewer-bina/cmlpdegpbcbejafhadnmcipikegeahka
 
-**Load it yourself right now (takes about 60 seconds):**
+One click, done. Free.
+
+**Or load it yourself from source (takes about 60 seconds):**
 
 1. Download or clone this repo
 2. Open Chrome and go to `chrome://extensions`
