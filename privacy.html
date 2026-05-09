@@ -4,42 +4,90 @@
   <meta charset="UTF-8">
   <title>HexDrop — Privacy Policy</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 680px; margin: 60px auto;
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 60px auto;
            padding: 0 20px; color: #222; line-height: 1.7; }
     h1 { font-size: 22px; margin-bottom: 4px; }
     h2 { font-size: 15px; margin-top: 32px; }
     .updated { color: #888; font-size: 13px; margin-bottom: 32px; }
+    code { background: #f3f3f3; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+    ul { margin: 8px 0 8px 22px; }
   </style>
 </head>
 <body>
   <h1>HexDrop Privacy Policy</h1>
-  <p class="updated">Last updated: April 2026</p>
+  <p class="updated">Last updated: May 2026 (v1.1.0)</p>
 
-  <h2>Data Collection</h2>
-  <p>HexDrop collects no data of any kind. The extension does not transmit,
-  store, log, or share any information about you, your files, or your browsing
-  activity.</p>
+  <h2>HexDrop Free</h2>
+  <p>The free version of HexDrop collects no personal data. Files you open are
+  read directly by your browser and processed entirely within your local tab.
+  No file contents, file names, or metadata are sent to any server.</p>
 
-  <h2>File Processing</h2>
-  <p>Files you open in HexDrop are read directly by your browser and processed
-  entirely within your local browser tab. No file contents, file names, or
-  metadata are sent to any server or third party at any time.</p>
-
-  <h2>Permissions</h2>
-  <p>HexDrop requests the <code>tabs</code> permission solely to open the
-  full-screen viewer in a new browser tab when you click the extension icon.
-  This permission is not used to read, monitor, or access any tab's URL,
-  content, or browsing history. No tab data of any kind is collected,
-  stored, or transmitted.</p>
+  <h2>HexDrop Pro (Optional Paid Upgrade)</h2>
+  <p>The optional Pro tier ($4.99 one-time payment) unlocks themes and
+  bookmarks. To support Pro, the extension collects and stores a small amount
+  of data:</p>
+  <ul>
+    <li><strong>Email address</strong> — provided to ExtensionPay (our payment
+    partner) when you purchase Pro. ExtensionPay uses this email to deliver a
+    license confirmation and validate your Pro entitlement on future launches.</li>
+    <li><strong>License token</strong> — a small token returned by ExtensionPay
+    after a successful purchase, stored locally in <code>chrome.storage.local</code>
+    so the extension remembers you have Pro without asking you to log in.</li>
+    <li><strong>Theme preference</strong> — the name of the color theme you've
+    selected (e.g. <code>matrix</code>), stored locally.</li>
+    <li><strong>Bookmarks</strong> — for files you bookmark, the extension
+    stores: a SHA-1 hash of the file content, the byte offset you bookmarked,
+    and any optional note you typed. <strong>The actual file content is never
+    stored or transmitted.</strong> The hash is one-way and cannot be reversed
+    to reconstruct the file.</li>
+  </ul>
 
   <h2>Network Activity</h2>
-  <p>HexDrop never connects to the internet. It contains no analytics,
-  no tracking pixels, no crash reporting, no update checks, and no
-  third-party SDKs of any kind. The extension works completely offline.</p>
+  <p>HexDrop Free makes <strong>zero network connections</strong>. It is
+  fully offline.</p>
+  <p>HexDrop Pro makes one type of network connection: to
+  <code>https://extensionpay.com/*</code>, used solely to verify your Pro
+  license is active. No file data is ever sent — only the license check.</p>
+
+  <h2>Payment Processing</h2>
+  <p>Payments are processed by ExtensionPay
+  (<a href="https://extensionpay.com/privacy">extensionpay.com/privacy</a>) in
+  partnership with Stripe (<a href="https://stripe.com/privacy">stripe.com/privacy</a>).
+  HexDrop never sees, stores, or has access to your credit card information,
+  bank details, or full billing address. Refer to those services' policies
+  for their data practices.</p>
+
+  <h2>Limited Use Disclosure</h2>
+  <p>HexDrop's use of any data collected through Pro license validation
+  adheres to the principle of limited use: data is used only to validate the
+  license, not for advertising, profiling, training AI/ML models, or any
+  purpose unrelated to providing the Pro features.</p>
+
+  <h2>What HexDrop Does NOT Do</h2>
+  <p>HexDrop has no analytics, no tracking pixels, no crash reporting, no
+  telemetry, no advertising SDKs, and no third-party data brokers. The Pro
+  license check (when you've purchased Pro) is the only network connection
+  the extension makes.</p>
+
+  <h2>Permissions</h2>
+  <p>HexDrop requests only one Chrome permission: <code>storage</code>, used
+  to remember your Pro license token, theme preference, and bookmarks
+  locally on your device. The extension does NOT request the <code>tabs</code>
+  permission and does not read any other tab's URL, content, or browsing
+  history.</p>
+
+  <h2>Data Retention &amp; Deletion</h2>
+  <p>To delete all local HexDrop data: uninstall the extension from
+  <code>chrome://extensions</code>. To delete your ExtensionPay account:
+  contact <a href="mailto:support@extensionpay.com">support@extensionpay.com</a>.</p>
+
+  <h2>Changes to This Policy</h2>
+  <p>If this policy changes, the updated version will be published at the
+  same URL with a new "Last updated" date.</p>
 
   <h2>Contact</h2>
-  <p>If you have questions about this privacy policy, please contact us at
+  <p>Questions or requests about your data:
   <a href="mailto:hexdrop.support@gmail.com">hexdrop.support@gmail.com</a>.
-  We will respond within 48 hours.</p>
+  Response within 48 hours.</p>
 </body>
 </html>

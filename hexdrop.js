@@ -112,6 +112,11 @@ function loadFile(file) {
     toolbar.style.display = 'flex';
     searchbar.style.display = 'flex';
     statusbar.style.display = 'flex';
+
+    // Notify Pro layer (themes/bookmarks) that a file is loaded
+    if (typeof window.hexdropProSetFile === 'function') {
+      window.hexdropProSetFile(fileBytes).catch(() => {});
+    }
     dropzone.style.display  = 'none';
     viewer.style.display    = 'block';
 
@@ -406,6 +411,9 @@ function updateStatus() {
     byteInfo.textContent = '';
     copyHexBtn.style.display = 'none';
     copyTextBtn.style.display = 'none';
+    if (typeof window.hexdropProShowBookmarkBtn === 'function') {
+      window.hexdropProShowBookmarkBtn(false);
+    }
     return;
   }
   const lo = Math.min(selectedStart, selectedEnd);
@@ -424,6 +432,9 @@ function updateStatus() {
   }
   copyHexBtn.style.display = '';
   copyTextBtn.style.display = '';
+  if (typeof window.hexdropProShowBookmarkBtn === 'function') {
+    window.hexdropProShowBookmarkBtn(true);
+  }
 }
 
 function tryDecode(bytes) {

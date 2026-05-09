@@ -1,9 +1,13 @@
 {
   "manifest_version": 3,
   "name": "HexDrop — Hex Viewer & Binary File Inspector",
-  "version": "1.0.0",
-  "description": "Drop any file. Instantly view it as hex, ASCII, and decoded text. Built for developers, modders, and reverse engineers.",
+  "version": "1.1.0",
+  "description": "Drop any file. View it as hex, ASCII, and decoded text. Free for everyone, with optional Pro tier for themes and bookmarks.",
   "minimum_chrome_version": "100",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -20,6 +24,6 @@
     "128": "icons/icon128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://extensionpay.com"
   }
 }

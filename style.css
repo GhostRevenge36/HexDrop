@@ -936,3 +936,335 @@ button:focus-visible, select:focus-visible {
   font-family: var(--ui-mono);
   letter-spacing: 0.03em;
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   PRO THEMES (v1.1.0+)
+   Each theme overrides the CSS variables from :root.
+   Triggered by setting data-theme="..." on <html>.
+   The default theme (no attribute) remains "amber" as defined above.
+   ══════════════════════════════════════════════════════════════ */
+
+[data-theme="matrix"] {
+  --bg:     #050a05;
+  --bg2:    #071007;
+  --bg3:    #0a160a;
+  --bg4:    #0f1f0f;
+  --accent:      #00ff66;
+  --accent2:     #00cc55;
+  --accent-dim:  #006633;
+  --accent-glow: rgba(0, 255, 102, 0.15);
+  --accent-sel:  rgba(0, 255, 102, 0.22);
+  --accent-match: rgba(0, 255, 102, 0.28);
+  --text:  #99ffaa;
+  --dim:   #4d8855;
+  --ghost: #1a3320;
+  --border:    #1a2a1a;
+  --border-hi: #224422;
+  --even:      #040804;
+  --hover:     #0d1810;
+  --match-active: #00ff66;
+}
+
+[data-theme="cyberpunk"] {
+  --bg:     #0a050f;
+  --bg2:    #100716;
+  --bg3:    #16091e;
+  --bg4:    #1f0d28;
+  --accent:      #ff2bd6;
+  --accent2:     #cc1cad;
+  --accent-dim:  #66145a;
+  --accent-glow: rgba(255, 43, 214, 0.15);
+  --accent-sel:  rgba(255, 43, 214, 0.22);
+  --accent-match: rgba(255, 43, 214, 0.28);
+  --text:  #ffaaee;
+  --dim:   #885588;
+  --ghost: #331a30;
+  --border:    #2a1a2a;
+  --border-hi: #442244;
+  --even:      #080408;
+  --hover:     #18101c;
+  --match-active: #ff2bd6;
+}
+
+[data-theme="ocean"] {
+  --bg:     #050810;
+  --bg2:    #070d18;
+  --bg3:    #0a1422;
+  --bg4:    #0f1e30;
+  --accent:      #2bc8ff;
+  --accent2:     #1c9fcc;
+  --accent-dim:  #145a66;
+  --accent-glow: rgba(43, 200, 255, 0.15);
+  --accent-sel:  rgba(43, 200, 255, 0.22);
+  --accent-match: rgba(43, 200, 255, 0.28);
+  --text:  #aae0ff;
+  --dim:   #557788;
+  --ghost: #1a2a33;
+  --border:    #1a2a33;
+  --border-hi: #224455;
+  --even:      #04080c;
+  --hover:     #0d1620;
+  --match-active: #2bc8ff;
+}
+
+[data-theme="sunset"] {
+  --bg:     #100805;
+  --bg2:    #180c07;
+  --bg3:    #22120a;
+  --bg4:    #2e180f;
+  --accent:      #ff6b2b;
+  --accent2:     #cc5022;
+  --accent-dim:  #663014;
+  --accent-glow: rgba(255, 107, 43, 0.15);
+  --accent-sel:  rgba(255, 107, 43, 0.22);
+  --accent-match: rgba(255, 107, 43, 0.28);
+  --text:  #ffc4a0;
+  --dim:   #886a55;
+  --ghost: #332218;
+  --border:    #2a1f18;
+  --border-hi: #443226;
+  --even:      #0c0604;
+  --hover:     #1c1108;
+  --match-active: #ff6b2b;
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   PRO UI — Pro button + menu, themes selector, bookmarks
+   ══════════════════════════════════════════════════════════════ */
+
+.pro-wrap {
+  position: relative;
+  display: inline-block;
+}
+
+#proBtn {
+  background: var(--bg3);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+#proBtn:hover {
+  background: var(--accent-glow);
+  box-shadow: 0 0 12px rgba(240, 168, 48, 0.15);
+}
+
+.pro-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 240px;
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  border-radius: 4px;
+  padding: 0;
+  z-index: 100;
+  display: none;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+}
+.pro-menu.open { display: block; }
+
+.pro-menu-section {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.pro-menu-section:last-child { border-bottom: none; }
+.pro-upgrade-section { background: var(--accent-glow); }
+
+.pro-menu-title {
+  font-family: var(--ui-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.pro-theme-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: background 0.1s;
+}
+.pro-theme-btn:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent-dim);
+}
+.pro-theme-btn:last-child { margin-bottom: 0; }
+
+.pro-upgrade-btn {
+  display: block;
+  width: 100%;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  font-family: var(--ui-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 9px 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+.pro-upgrade-btn:hover {
+  background: var(--accent2);
+}
+
+.pro-menu-hint {
+  font-family: var(--ui-mono);
+  font-size: 10px;
+  color: var(--dim);
+  margin-top: 6px;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+
+/* ── Bookmarks ── */
+
+#bookmarkBtn,
+#bookmarksListBtn {
+  background: var(--bg3);
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  padding: 4px 9px;
+  cursor: pointer;
+  border-radius: 3px;
+  letter-spacing: 0.04em;
+}
+#bookmarkBtn:hover,
+#bookmarksListBtn:hover {
+  background: var(--accent-glow);
+}
+
+#bookmarksPanel {
+  position: fixed;
+  top: 80px;
+  right: -360px;
+  width: 340px;
+  max-height: calc(100vh - 160px);
+  background: var(--bg2);
+  border: 1px solid var(--border-hi);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -4px 4px 24px rgba(0, 0, 0, 0.6);
+  transition: right 0.18s ease-out;
+}
+#bookmarksPanel.open { right: 0; }
+
+.bookmarks-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg3);
+}
+.bookmarks-title {
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+#bookmarksPanelClose {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+#bookmarksPanelClose:hover { color: var(--accent); }
+
+.bookmarks-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.bookmarks-empty {
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  color: var(--dim);
+  text-align: center;
+  padding: 30px 16px;
+  line-height: 1.6;
+}
+
+.bookmark-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.bookmark-row:last-child { border-bottom: none; }
+.bookmark-row:hover { background: var(--hover); }
+
+.bookmark-jump {
+  background: transparent;
+  border: 1px solid var(--accent-dim);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 4px 7px;
+  cursor: pointer;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.bookmark-jump:hover {
+  background: var(--accent-glow);
+}
+.bookmark-dec {
+  color: var(--dim);
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.bookmark-note {
+  font-family: var(--ui-mono);
+  font-size: 11px;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bookmark-note em {
+  color: var(--ghost);
+  font-style: italic;
+}
+
+.bookmark-del {
+  background: transparent;
+  border: none;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 0 6px;
+  font-size: 14px;
+}
+.bookmark-del:hover { color: var(--accent); }
