@@ -23,9 +23,9 @@
   No file contents, file names, or metadata are sent to any server.</p>
 
   <h2>HexDrop Pro (Optional Paid Upgrade)</h2>
-  <p>The optional Pro tier ($4.99 one-time payment) unlocks themes and
-  bookmarks. To support Pro, the extension collects and stores a small amount
-  of data:</p>
+  <p>The optional Pro tier ($4.99 one-time payment) unlocks themes, bookmarks,
+  annotated regions, hash calculator, pattern wildcards, and diff mode. To
+  support Pro, the extension collects and stores a small amount of data:</p>
   <ul>
     <li><strong>Email address</strong> — provided to ExtensionPay (our payment
     partner) when you purchase Pro. ExtensionPay uses this email to deliver a
@@ -40,6 +40,42 @@
     and any optional note you typed. <strong>The actual file content is never
     stored or transmitted.</strong> The hash is one-way and cannot be reversed
     to reconstruct the file.</li>
+    <li><strong>Annotations</strong> — for byte ranges you annotate, the
+    extension stores: a SHA-1 hash of the file, the start and end byte offsets,
+    your label text, and your chosen color. As with bookmarks, only the hash
+    of the file is stored, never the file content.</li>
+    <li><strong>Custom theme palette</strong> — if you create a custom theme,
+    your three picked colors (background, accent, text) and the derived full
+    palette are stored locally so the theme persists across sessions. No file
+    data involved.</li>
+    <li><strong>Structure template text</strong> — the most-recent structure
+    template you typed into the Structures panel is saved locally so it's
+    there next time you open the panel. Just text — your field type
+    declarations and field names. No file data.</li>
+  </ul>
+
+  <h2>Features That Use No Storage and No Network</h2>
+  <p>The following Pro features run entirely in your browser tab and store
+  nothing, send nothing:</p>
+  <ul>
+    <li><strong>Hash calculator</strong> — SHA-256, SHA-1, and CRC32 of the
+    full file or a selection are computed locally via the browser's Web Crypto
+    API. Hashes are shown on screen and never persisted to storage or
+    transmitted.</li>
+    <li><strong>Pattern wildcards</strong> — searching with <code>??</code>
+    wildcards is purely a local computation against the file you've already
+    loaded. No data leaves the page.</li>
+    <li><strong>Diff mode</strong> — both files compared in diff mode are read
+    locally via the browser's FileReader API. They are held in memory only
+    while the comparison is open, never persisted, never transmitted. The
+    Export Patch feature creates a downloadable text file on your device
+    listing the differences; nothing is uploaded.</li>
+    <li><strong>Value decoder</strong> — decodes the bytes you've selected as
+    int / float values. Pure local computation; no storage, no network.</li>
+    <li><strong>Structure templates</strong> — applies a structure template
+    to bytes at the chosen offset and renders the decoded fields on screen.
+    The template TEXT is saved (see Pro storage above); the file bytes and
+    decoded values are not stored or transmitted.</li>
   </ul>
 
   <h2>Network Activity</h2>
@@ -71,10 +107,13 @@
 
   <h2>Permissions</h2>
   <p>HexDrop requests only one Chrome permission: <code>storage</code>, used
-  to remember your Pro license token, theme preference, and bookmarks
-  locally on your device. The extension does NOT request the <code>tabs</code>
-  permission and does not read any other tab's URL, content, or browsing
-  history.</p>
+  to remember your Pro license token, theme preference, bookmarks, and
+  annotations locally on your device. The extension does NOT request the
+  <code>tabs</code> permission and does not read any other tab's URL,
+  content, or browsing history. The extension declares
+  <code>extensionpay.com</code> as a content-script host so that ExtensionPay
+  can confirm a successful purchase back to the extension; this script runs
+  only on extensionpay.com pages, never on any other site.</p>
 
   <h2>Data Retention &amp; Deletion</h2>
   <p>To delete all local HexDrop data: uninstall the extension from

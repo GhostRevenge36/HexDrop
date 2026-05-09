@@ -56,6 +56,7 @@ const jumpInput   = document.getElementById('jumpInput');
 const jumpBtn     = document.getElementById('jumpBtn');
 const jumpMode    = document.getElementById('jumpMode');
 const searchMode  = document.getElementById('searchMode');
+const searchScope = document.getElementById('searchScope');
 
 // ── Jump mode state (HEX or DEC address) ─────────────────────────────────────
 let jumpIsHex = true;
@@ -82,6 +83,18 @@ searchMode.addEventListener('click', () => {
   searchInput.value = '';
   doSearch();
 });
+
+// ── Search scope state (ALL = whole file, SEL = selection only) ──────────────
+let searchScopeIsSel = false;
+searchScope.addEventListener('click', () => {
+  searchScopeIsSel = !searchScopeIsSel;
+  searchScope.textContent = searchScopeIsSel ? 'SEL' : 'ALL';
+  searchScope.title = searchScopeIsSel
+    ? 'Currently: search WITHIN selection only. Click to switch to ALL (entire file).'
+    : 'Currently: search the entire FILE. Click to switch to SEL (selected range only).';
+  doSearch();
+});
+
 const copyHexBtn  = document.getElementById('copyHexBtn');
 const copyTextBtn = document.getElementById('copyTextBtn');
 
@@ -241,6 +254,11 @@ function render() {
   nextPageBtn.disabled = (page >= totalPages - 1);
 
   updateStatus();
+
+  // Pro-layer post-render hook (annotations overlay)
+  if (typeof window.hexdropProAfterRender === 'function') {
+    window.hexdropProAfterRender(start, end);
+  }
 }
 
 function byteClass(b, relIdx, selMin, selMax, matchOffsets, activeOffsets) {
@@ -414,6 +432,9 @@ function updateStatus() {
     if (typeof window.hexdropProShowBookmarkBtn === 'function') {
       window.hexdropProShowBookmarkBtn(false);
     }
+    if (typeof window.hexdropProSetSelection === 'function') {
+      window.hexdropProSetSelection(-1, -1);
+    }
     return;
   }
   const lo = Math.min(selectedStart, selectedEnd);
@@ -435,6 +456,9 @@ function updateStatus() {
   if (typeof window.hexdropProShowBookmarkBtn === 'function') {
     window.hexdropProShowBookmarkBtn(true);
   }
+  if (typeof window.hexdropProSetSelection === 'function') {
+    window.hexdropProSetSelection(lo, hi);
+  }
 }
 
 function tryDecode(bytes) {
@@ -452,6 +476,27 @@ function tryDecode(bytes) {
 
 // ── KMP search ────────────────────────────────────────────────────────────────
 const MAX_SEARCH_RESULTS = 50000;
+
+// Wildcard byte-pattern search. `needle` is Int16Array — bytes 0–255 match exactly,
+// value -1 matches any byte (wildcard). Used when search pattern contains "??" tokens.
+// Pro feature; gated at the call site in doSearch().
+function wildcardSearch(haystack, needle) {
+  const results = [];
+  if (!needle.length) return results;
+  const last = haystack.length - needle.length;
+  for (let i = 0; i <= last; i++) {
+    let match = true;
+    for (let k = 0; k < needle.length; k++) {
+      const n = needle[k];
+      if (n !== -1 && haystack[i + k] !== n) { match = false; break; }
+    }
+    if (match) {
+      results.push({ offset: i, len: needle.length });
+      if (results.length >= MAX_SEARCH_RESULTS) break;
+    }
+  }
+  return results;
+}
 
 function kmpSearch(haystack, needle) {
   const results = [];
@@ -476,6 +521,20 @@ function kmpSearch(haystack, needle) {
   return results;
 }
 
+// Returns the byte range to search in based on the current scope toggle.
+// Default: whole file. When "SEL" is active and a range is selected: only
+// the selected slice. Returns { bytes, offset } where offset is the absolute
+// byte position of bytes[0] within fileBytes — used to translate match
+// indices back to absolute file offsets.
+function getSearchHaystack() {
+  if (searchScopeIsSel && selectedStart !== -1) {
+    const lo = Math.min(selectedStart, selectedEnd);
+    const hi = Math.max(selectedStart, selectedEnd);
+    return { bytes: fileBytes.slice(lo, hi + 1), offset: lo };
+  }
+  return { bytes: fileBytes, offset: 0 };
+}
+
 // ── Search ────────────────────────────────────────────────────────────────────
 function doSearch() {
   const q = searchInput.value.trim();
@@ -483,6 +542,14 @@ function doSearch() {
   activeMatch = -1;
   if (!q || !fileBytes) { searchInfo.textContent = ''; render(); return; }
 
+  // If scope is SEL but no selection, surface the issue and bail.
+  if (searchScopeIsSel && selectedStart === -1) {
+    searchInfo.textContent = 'SEL scope: select a byte range first';
+    render();
+    return;
+  }
+
+  const { bytes: haystack, offset: scopeOffset } = getSearchHaystack();
   let pattern;
 
   if (!searchIsHex) {
@@ -501,21 +568,45 @@ function doSearch() {
       return;
     }
     pattern = new Uint8Array(vals);
+    searchMatches = kmpSearch(haystack, pattern);
   } else {
     // HEX / ASCII mode
-    // Detect hex pattern: tokens like "4D 5A" or "4D5A"
+    // Detect hex pattern: tokens like "4D 5A" or "4D5A", or wildcards "??" (Pro)
     const hexTokens = q.replace(/\s+/g, ' ').split(' ').map(t => t.trim()).filter(Boolean);
-    const isHex = hexTokens.every(t => /^[0-9a-fA-F]{1,2}$/.test(t));
-    if (isHex && hexTokens.some(t => t.length === 2)) {
+    const allHexOrWild = hexTokens.every(t => /^([0-9a-fA-F]{1,2}|\?\?)$/.test(t));
+    const hasWildcard  = hexTokens.some(t => t === '??');
+    const hasHexByte   = hexTokens.some(t => t !== '??' && t.length === 2);
+    const looksLikeHexPattern = allHexOrWild && (hasHexByte || hasWildcard);
+
+    if (looksLikeHexPattern && hasWildcard) {
+      // Pro gate: wildcards require Pro
+      const isPaid = (typeof window.hexdropProIsPaid === 'function') && window.hexdropProIsPaid();
+      if (!isPaid) {
+        searchInfo.textContent = 'Wildcards (??) are a Pro feature — click ⬢ Pro to unlock';
+        render();
+        return;
+      }
+      // Build Int16Array pattern with -1 for wildcards
+      pattern = new Int16Array(hexTokens.length);
+      for (let i = 0; i < hexTokens.length; i++) {
+        pattern[i] = (hexTokens[i] === '??') ? -1 : parseInt(hexTokens[i], 16);
+      }
+      searchMatches = wildcardSearch(haystack, pattern);
+    } else if (looksLikeHexPattern) {
       pattern = new Uint8Array(hexTokens.map(t => parseInt(t, 16)));
+      searchMatches = kmpSearch(haystack, pattern);
     } else {
       // ASCII / text search
       const enc = new TextEncoder();
       pattern = enc.encode(q);
+      searchMatches = kmpSearch(haystack, pattern);
     }
   }
 
-  searchMatches = kmpSearch(fileBytes, pattern);
+  // Translate match indices back to absolute file offsets if we searched a slice
+  if (scopeOffset > 0 && searchMatches.length > 0) {
+    searchMatches = searchMatches.map(m => ({ offset: m.offset + scopeOffset, len: m.len }));
+  }
 
   const capped = searchMatches.length >= MAX_SEARCH_RESULTS;
   const count  = searchMatches.length;
@@ -824,7 +915,7 @@ document.getElementById('exportPdf').addEventListener('click', () => {
   <thead><tr><td>Offset</td><td>Hex Bytes</td><td>ASCII</td></tr></thead>
   <tbody>${rows.join('')}</tbody>
 </table>
-<div class="doc-footer">Generated by HexDrop &mdash; No data leaves your device</div>
+<div class="doc-footer">Generated by HexDrop &mdash; by GhostRevenge36 &mdash; No data leaves your device</div>
 </body>
 </html>`;
 

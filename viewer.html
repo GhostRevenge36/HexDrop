@@ -26,7 +26,7 @@
           <span id="filesize" class="dim">—</span>
         </div>
         <div class="toolbar-right">
-          <label class="ctrl-label">Encoding</label>
+          <label class="ctrl-label" for="encoding">Encoding</label>
           <select id="encoding">
             <option value="utf8">UTF-8</option>
             <option value="utf16le">UTF-16 LE</option>
@@ -34,7 +34,7 @@
             <option value="cp1252">Windows-1252</option>
             <option value="ascii">ASCII</option>
           </select>
-          <label class="ctrl-label">Cols</label>
+          <label class="ctrl-label" for="cols">Cols</label>
           <select id="cols">
             <option value="8">8</option>
             <option value="16" selected>16</option>
@@ -62,9 +62,9 @@
             </div>
           </div>
           <button id="helpBtn" class="help-btn" title="Show keyboard shortcuts and instructions">?</button>
-          <label class="ctrl-label">Jump to Address</label>
+          <label class="ctrl-label" for="jumpInput">Jump to Address</label>
           <button id="jumpMode" title="Toggle hex / decimal address input" class="mode-btn">HEX</button>
-          <input id="jumpInput" type="text" placeholder="e.g. 1C" title="Type a byte address and press Enter or ↵. Toggle HEX/DEC to switch base.">
+          <input id="jumpInput" type="text" placeholder="e.g. 1C" title="Type a byte address and press Enter or ↵. Toggle HEX/DEC to switch base." aria-label="Jump to byte address">
           <button id="jumpBtn" title="Jump to address (Enter)">↵</button>
         </div>
       </div>
@@ -82,7 +82,8 @@
     <div id="searchbar" style="display:none">
       <span class="search-label">FIND VALUE</span>
       <button id="searchMode" title="Currently: Hex input (e.g. 4D 5A). Click to switch to Decimal values." class="mode-btn">HEX</button>
-      <input id="searchInput" type="text" placeholder="Hex bytes (e.g. 4D 5A) or ASCII text…" spellcheck="false" title="Ctrl+F to focus. HEX: type hex bytes separated by spaces, or plain ASCII. DEC: type decimal byte values 0–255 separated by spaces.">
+      <button id="searchScope" title="Search scope. Click to toggle: ALL = entire file. SEL = only the currently selected byte range." class="mode-btn">ALL</button>
+      <input id="searchInput" type="text" placeholder="Hex bytes (e.g. 4D 5A) · ASCII · ?? wildcards (Pro)" spellcheck="false" title="Ctrl+F to focus. HEX: type hex bytes separated by spaces, or plain ASCII, or use ?? for wildcards (Pro feature, e.g. 4D 5A ?? ?? 50 45). DEC: type decimal byte values 0–255 separated by spaces.">
       <span id="searchInfo" class="dim"></span>
       <button id="prevMatch" title="Previous match (Shift+Enter)">▲ PREV</button>
       <button id="nextMatch" title="Next match (Enter)">▼ NEXT</button>
@@ -123,6 +124,19 @@
           <div class="help-row"><span class="help-key">Browse</span><span>Click the drop zone to pick a file from your computer</span></div>
           <div class="help-row"><span class="help-key">Load new file</span><span>Once a file is open, drag a new file anywhere onto this window — it replaces the current file immediately. You do NOT need to close or reopen HexDrop.</span></div>
           <div class="help-row"><span class="help-key">Popup drop</span><span>Drop a file directly on the HexDrop popup (toolbar icon) — it opens the viewer automatically in this tab</span></div>
+        </div>
+
+        <div class="help-section help-pro-section">
+          <div class="help-section-title">POWER TOOLS <span class="help-pro-badge"></span></div>
+          <div class="help-row"><span class="help-key">⬢ Pro / ★</span><span>Top-right toolbar — opens themes menu. 5 presets plus a <strong>Custom… 🎨</strong> entry that lets you pick your own background, accent, and text colors. HexDrop derives the full palette from your 3 picks.</span></div>
+          <div class="help-row"><span class="help-key">⇄ Diff</span><span>Top-right toolbar — opens diff mode. Pick two files, see them side-by-side, every differing byte in red. <strong>NEXT DIFF ▶</strong> jumps to the next individual differing byte; <strong>Δ Changes Only</strong> tab shows just the changed offsets with int/uint/float interpretations (cheat-engine style); <strong>⇩ Export Patch</strong> downloads a text patch listing every change.</span></div>
+          <div class="help-row"><span class="help-key">?? wildcards</span><span>In the Find Value bar, type <code>4D 5A ?? ?? 50 45</code> — the <code>??</code> matches any byte. AOB-style scanning for binaries and game memory patterns.</span></div>
+          <div class="help-row"><span class="help-key">SEL search scope</span><span>Toggle the <strong>ALL/SEL</strong> button next to the HEX/DEC mode to limit search to the currently selected byte range. Free for everyone.</span></div>
+          <div class="help-row"><span class="help-key"># Hashes</span><span>Status bar (bottom) — opens hash panel. Shows SHA-256, SHA-1, and CRC32 of the FULL file plus any selection. Click 📋 to copy.</span></div>
+          <div class="help-row"><span class="help-key">Σ Decode</span><span>Status bar — opens value decoder. Select bytes → see them decoded as int8/16/32/64, uint8/16/32/64, float32/64 in both little-endian and big-endian. Critical for figuring out file format fields.</span></div>
+          <div class="help-row"><span class="help-key">🧩 Structures</span><span>Status bar — define a struct (fields like <code>u32 width</code>, <code>char[8] magic</code>) and apply at any offset to see all fields decoded at once. Built-in presets for PNG, BMP, ZIP, WAV, PE/EXE headers.</span></div>
+          <div class="help-row"><span class="help-key">+ Annotate / 🏷 Annotations</span><span>Status bar — color-highlight any byte range with a label. Saves per file. Map out file formats as you reverse-engineer them.</span></div>
+          <div class="help-row"><span class="help-key">⚑ Bookmark / Bookmarks</span><span>Status bar — save and revisit specific byte offsets in any file with optional notes. Per-file, returns when you reopen the same file.</span></div>
         </div>
 
         <div class="help-section">

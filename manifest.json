@@ -3,11 +3,20 @@
   "name": "HexDrop — Hex Viewer & Binary File Inspector",
   "version": "1.1.0",
   "description": "Drop any file. View it as hex, ASCII, and decoded text. Free for everyone, with optional Pro tier for themes and bookmarks.",
+  "author": "GhostRevenge36",
+  "homepage_url": "https://ghostrevenge36.github.io/hexdrop-privacy/",
   "minimum_chrome_version": "100",
   "permissions": ["storage"],
   "background": {
     "service_worker": "background.js"
   },
+  "content_scripts": [
+    {
+      "matches": ["https://extensionpay.com/*"],
+      "js": ["ExtPay.js"],
+      "run_at": "document_start"
+    }
+  ],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
