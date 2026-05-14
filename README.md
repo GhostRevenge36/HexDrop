@@ -68,7 +68,7 @@ One click, done. Free.
 
 ## How I Built It
 
-Pure vanilla JavaScript. No frameworks, no build system, no dependencies at all. Just open the files and it works.
+Pure vanilla JavaScript. No frameworks, no build system, no dependencies at all (the one vendored library is ExtPay for the Pro license check). Just open the files and it works.
 
 | Thing | How it's done |
 |-------|--------------|
@@ -77,7 +77,7 @@ Pure vanilla JavaScript. No frameworks, no build system, no dependencies at all.
 | UTF-16 | Full surrogate pair support built in |
 | Windows-1252 | Complete 0x80–0x9F character lookup table |
 | Export | Built with Blob arrays so even big files export cleanly |
-| Permissions | None requested — the extension does nothing it doesn't tell you about |
+| Permissions | Only `storage` (to remember your Pro license, theme, bookmarks, annotations) and a content script on `extensionpay.com` (to confirm Pro purchases). Nothing else. |
 
 ---
 
@@ -85,11 +85,15 @@ Pure vanilla JavaScript. No frameworks, no build system, no dependencies at all.
 
 ```
 hexdrop/
-  manifest.json         — MV3 manifest, zero permissions
+  manifest.json         — MV3 manifest, storage permission only
+  background.js         — service worker (runs ExtPay payment polling)
   popup.html / popup.js — the toolbar popup that opens the viewer
   viewer.html           — the actual hex viewer UI
   hexdrop.js            — all the viewer logic (~1,200 lines)
-  style.css             — amber terminal theme
+  hexdrop-pro.js        — Pro tier features (~1,200 lines, ExtPay-gated)
+  ExtPay.js             — vendored payment library (Glench/ExtPay)
+  style.css             — amber terminal theme + 4 alternate themes for Pro
+  privacy.html          — bundled privacy policy
   icons/                — 16, 32, 48, 128px icons
   screenshots/          — store screenshots
   test-files/           — sample files I used for testing
@@ -112,4 +116,4 @@ https://ko-fi.com/ghostrevenge36
 
 ## License
 
-MIT — use it however you want.
+MIT — use it however you want. See [LICENSE](LICENSE).
